@@ -39,7 +39,7 @@
     },
     "require": {
         "php": ">=7.1.0",
-        "composer require psr/cache": "^1.0.1"
+        "psr/cache": "^1.0.1"
     },
     "scripts": {
         "test": "phpunit",
