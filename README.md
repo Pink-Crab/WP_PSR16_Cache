@@ -90,6 +90,8 @@ $cache = new File_Cache($wp_uploads['basedir'] . '/my-cache', '.cache');
 $cache->set('my_key', ['some', 'data']);
 
 // Creates  /public/wp-content/uploads/my-cache/my_key.cache
+
+
 ```
 
 If you plan on using this as a plugin and want to clean up after an install. You can just create an instance of the Class on activation and then run clear on uninstall
@@ -126,12 +128,20 @@ $cache->set('my_key', ['some', 'data']);
 // Will create a transient which can be recalled using either;
 $value = get_transient('my_cache_my_key');
 (new Transient_Cache('my_cache'))->get('my_key');
+
+
+// You can create an instance with no key
+$cache = New Transient_Cache();
+$cache->set('my_other_key', ['some', 'data']);
+
+// Will create a transient which can be recalled using either;
+$value = get_transient('my_other_key');
 ```
 > PLEASE NOTE:
 Calling clear() will use $wpdb to get all transients from the database and clear any which start with your prefix. If you have no prefix defined, this could clear all of your transients and create some unusual side effected. 
 
 > ALSO: 
-Some mangaged hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your key.
+Some mangaged hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your prefix.
 
 
 
