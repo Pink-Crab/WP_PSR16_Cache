@@ -259,7 +259,7 @@ class File_Cache implements CacheInterface {
 		return new Cache_Item(
 			$key,
 			$data,
-			$this->compile_expiry( $this->ttl_to_seconds( $ttl ) ),
+			$this->compile_expiry( $this->ttl_to_seconds( $ttl ) )
 		);
 	}
 
