@@ -1,4 +1,4 @@
-name: PHPUnit
+name: GitHub_CI
 
 on:
   push:
