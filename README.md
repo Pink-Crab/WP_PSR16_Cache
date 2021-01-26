@@ -1,6 +1,6 @@
 # WP PSR16 Simple Cache
 
-Provides both WP Transient and WP FileSystem (Direct) implementation to PSR16`s *CacheInterface*.
+Provides both WP Transient and WP FileSystem (Direct) implementation to [*PSR16`s CacheInterface*](https://github.com/php-fig/simple-cache).
 
 ![alt text](https://img.shields.io/badge/Current_Version-2.0.2-yellow.svg?style=flat " ") 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
@@ -10,7 +10,6 @@ Provides both WP Transient and WP FileSystem (Direct) implementation to PSR16`s 
 ![alt text](https://img.shields.io/badge/WP_PHPUnit-V5-brightgreen.svg?style=flat " ") 
 ![alt text](https://img.shields.io/badge/PHPCS-WP_Extra-brightgreen.svg?style=flat " ") 
 
-*Tested against php versions 7.1, 7.2, 7.3 & 7.4*
 
 ***********************************************
 
@@ -28,7 +27,7 @@ Works with PHP versions 7.1, 7.2, 7.3 & 7.4
 $ composer require pinkcrab/wp-psr16-cache
 ```
 
-***********************************************
+
 
 ## Getting Started
 
@@ -75,7 +74,7 @@ $cache->clear();
 
 ```
 
-***********************************************
+
 
 ## File_Cache
 
@@ -111,7 +110,7 @@ function called_on_uninstall(){
 }
 ```
 
-***********************************************
+
 
 ## Transient Cache
 
@@ -134,7 +133,11 @@ Calling clear() will use $wpdb to get all transients from the database and clear
 > ALSO: 
 Some mangaged hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your key.
 
+
+
 ***********************************************
+
+
 
 ## Changelog
 * 2.0.0 - Moved to composer and switched to using WP_FileSystem over raw PHP functions.
