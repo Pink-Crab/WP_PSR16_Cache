@@ -9,8 +9,7 @@ Provides both WP Transient and WP FileSystem (Direct) implementation to PSR16`s 
 ![alt text](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat " ") 
 ![alt text](https://img.shields.io/badge/WP_PHPUnit-V5-brightgreen.svg?style=flat " ") 
 ![alt text](https://img.shields.io/badge/PHPCS-WP_Extra-brightgreen.svg?style=flat " ") 
-
-### Tested with php versions 7.1, 7.2, 7.3 & 7.4
+*Tested with php versions 7.1, 7.2, 7.3 & 7.4*
 
 ***********************************************
 
