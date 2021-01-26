@@ -133,8 +133,7 @@ $value = get_transient('my_cache_my_key');
 // You can create an instance with no key
 $cache = New Transient_Cache();
 $cache->set('my_other_key', ['some', 'data']);
-
-// Will create a transient which can be recalled using either;
+// Get
 $value = get_transient('my_other_key');
 ```
 > PLEASE NOTE:
