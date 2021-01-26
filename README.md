@@ -2,7 +2,7 @@
 
 Provides both WP Transient and WP FileSystem (Direct) implementation to PSR16`s *CacheInterface*.
 
-![alt text](https://img.shields.io/badge/Current_Version-2.0.1-yellow.svg?style=flat " ") 
+![alt text](https://img.shields.io/badge/Current_Version-2.0.2-yellow.svg?style=flat " ") 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
 
 ![](https://github.com/Pink-Crab/WP_PSR16_Cache/workflows/GitHub_CI/badge.svg " ")
