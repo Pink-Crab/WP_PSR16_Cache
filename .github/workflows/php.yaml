@@ -57,7 +57,7 @@ jobs:
             ${{ runner.os }}-php-
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-suggest
+        run: composer clearcache && composer install --prefer-dist --no-suggest
 
       - name: Run Tests
         env:
