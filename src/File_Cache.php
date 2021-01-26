@@ -69,7 +69,7 @@ class File_Cache implements CacheInterface {
 	 * @param string $extension
 	 */
 	public function __construct( string $filepath, string $extension = '.do' ) {
-		$this->filepath  = rtrim( sanitize_title( $filepath ), '\\/' );
+		$this->filepath  = rtrim( $filepath, '\\/' );
 		$this->extension = $extension;
 
 		$this->set_wp_file_system();

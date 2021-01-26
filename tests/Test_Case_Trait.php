@@ -84,6 +84,8 @@ trait Test_Case_Trait {
 		);
 		$this->assertEquals( 'A one', $this->cache->get( 'a1' ) );
 		$this->assertEquals( 'B two', $this->cache->get( 'b2' ) );
+
+        $this->cache->clear();
 	}
 
 	/**
@@ -105,6 +107,8 @@ trait Test_Case_Trait {
 		$this->assertEquals( 'D four', $values['d4'] );
 		$this->assertEquals( 'E five', $values['e5'] );
 		$this->assertNull( $values['f6'] );
+
+        $this->cache->clear();
 	}
 
 	/**
@@ -124,6 +128,8 @@ trait Test_Case_Trait {
 		$this->assertEquals( 'G seven', $values['g7'] );
 		$this->assertEquals( 'H eight', $values['h8'] );
 		$this->assertEquals( 'FALLBACK', $values['i9'] );
+
+        $this->cache->clear();
 	}
 
 	/**
@@ -139,6 +145,8 @@ trait Test_Case_Trait {
 		$this->cache->deleteMultiple( array( 'i9', 'j10' ) );
 		$this->assertNull( $this->cache->get( 'i9' ) );
 		$this->assertNull( $this->cache->get( 'j10' ) );
+
+        $this->cache->clear();
 	}
 
 	/**
@@ -150,6 +158,8 @@ trait Test_Case_Trait {
 		$this->assertEquals( 'Bravo', $this->cache->get( 'b' ) );
 		sleep( 3 );
 		$this->assertEquals( 'Fallback', $this->cache->get( 'b', 'Fallback' ) );
+
+        $this->cache->clear();
 	}
 
 	/**
