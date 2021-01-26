@@ -64,4 +64,6 @@ jobs:
         run: composer install --prefer-dist --no-suggest
 
       - name: Run Tests
+        env:
+          environment: 0.0.0.0
         run: composer test && composer analyse && composer sniff
