@@ -1,4 +1,4 @@
-name: PHPUnit
+name: GitHub_CI
 
 on:
   push:
@@ -42,22 +42,13 @@ jobs:
         run: php -v
 
       - name: Clear existing composer
-        run: rm -rf vendor && rm -rf composer.lock
+        run: rm -rf wordpress && rm -rf vendor && rm -rf composer.lock 
 
       - name: Validate composer.json and composer.lock
         run: composer validate
 
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v2
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
       - name: Install dependencies
-        if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install --prefer-dist --no-suggest
+        run: composer clearcache && rm -rf composer.lock && composer install --prefer-dist --no-suggest
 
       - name: Run Tests
         env:
