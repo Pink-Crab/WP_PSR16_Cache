@@ -1,14 +1,17 @@
 # WP PSR16 Simple Cache
 
 Provides both WP Transient and WP FileSystem (Direct) implementation to PSR16`s *CacheInterface*.
-![](https://github.com/Pink-Crab/WP_PSR16_Cache/workflows/GitHub_CI/badge.svg " ")
 
 ![alt text](https://img.shields.io/badge/Current_Version-2.0.1-yellow.svg?style=flat " ") 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
 
+### Tested with php versions 7.1, 7.2, 7.3 & 7.4
+
+![](https://github.com/Pink-Crab/WP_PSR16_Cache/workflows/GitHub_CI/badge.svg " ")
 ![alt text](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat " ") 
-![alt text](https://img.shields.io/badge/PHPUnit-PASSING-brightgreen.svg?style=flat " ") 
+![alt text](https://img.shields.io/badge/WP_PHPUnit-V5-brightgreen.svg?style=flat " ") 
 ![alt text](https://img.shields.io/badge/PHPCS-WP_Extra-brightgreen.svg?style=flat " ") 
+
 
 ## Requirements
 
@@ -125,3 +128,4 @@ Some mangaged hosts store transients outside of the regular Options table. This 
 ## Changelog
 * 2.0.0 - Moved to composer and switched to using WP_FileSystem over raw PHP functions.
 * 2.0.1 - Fixed trailin comma issue in File_Cache and setup all github CI workflows.
+* 2.0.2 - Readme formatting,
