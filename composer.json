@@ -30,8 +30,8 @@
         "phpstan/phpstan": "^0.12.6",
         "szepeviktor/phpstan-wordpress": "^0.7.2",
         "php-stubs/wordpress-stubs": "^5.6.0",
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.5.0",
-        "wp-coding-standards/wpcs": "^2.1",
+        "dealerdirect/phpcodesniffer-composer-installer": "*",
+        "wp-coding-standards/wpcs": "*",
         "object-calisthenics/phpcs-calisthenics-rules": "*"
     },
     "require": {
