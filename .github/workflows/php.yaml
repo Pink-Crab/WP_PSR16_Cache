@@ -65,5 +65,5 @@ jobs:
 
       - name: Run Tests
         env:
-          environment: github_cli
+          environment_github: true
         run: composer test && composer analyse && composer sniff
