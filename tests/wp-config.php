@@ -30,6 +30,8 @@ define( 'WP_DEBUG', true );
 // WARNING WARNING WARNING!
 // These tests will DROP ALL TABLES in the database with the prefix named below.
 // DO NOT use a production database or one that is shared with something else.
+
+// If being ran by github CLI use these DB values.
 if ( getenv( 'environment_github' ) ) {
 	define( 'DB_NAME', 'pc_core_tests' );
 	define( 'DB_USER', 'root' );
