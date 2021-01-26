@@ -27,4 +27,7 @@ class Test_File_Cache extends TestCase {
 	public function setUp() {
 		$this->cache = new File_Cache( __DIR__ . '/File_Cache_FS' );
 	}
+
+	/**             RUNS ALL TESTS FROM TRAIT!             */
+
 }
