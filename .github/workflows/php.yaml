@@ -42,7 +42,7 @@ jobs:
         run: php -v
 
       - name: Clear existing composer
-        run: rm -rf vendor && rm -rf composer.lock
+        run: composer clearcache && rm -rf vendor && rm -rf composer.lock 
 
       - name: Validate composer.json and composer.lock
         run: composer validate
@@ -57,7 +57,7 @@ jobs:
             ${{ runner.os }}-php-
       - name: Install dependencies
         if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer clearcache && composer install --prefer-dist --no-suggest
+        run: composer install --prefer-dist --no-suggest
 
       - name: Run Tests
         env:
