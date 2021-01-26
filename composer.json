@@ -41,6 +41,8 @@
     "scripts": {
         "test": "phpunit",
         "analyse": "vendor/bin/phpstan analyse src -l8",
-        "sniff": "./vendor/bin/phpcs src/ -v"
+        "sniff": "./vendor/bin/phpcs src/ -v",
+        "all": "composer test && composer analyse && composer sniff"
+
     }
 }
