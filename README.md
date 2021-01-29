@@ -1,14 +1,17 @@
 # WP PSR16 Simple Cache
 
-Provides both WP Transient and WP FileSystem (Direct) implementation to PSR16`s *CacheInterface*.
-![](https://github.com/Pink-Crab/WP_PSR16_Cache/workflows/GitHub_CI/badge.svg " ")
+Provides both WP Transient and WP FileSystem (Direct) implementation to [*PSR16`s CacheInterface*](https://github.com/php-fig/simple-cache).
 
-![alt text](https://img.shields.io/badge/Current_Version-2.0.1-yellow.svg?style=flat " ") 
+![alt text](https://img.shields.io/badge/Current_Version-2.0.2-yellow.svg?style=flat " ") 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
 
-![alt text](https://img.shields.io/badge/PHPStan-level%208-brightgreen.svg?style=flat " ") 
-![alt text](https://img.shields.io/badge/PHPUnit-PASSING-brightgreen.svg?style=flat " ") 
-![alt text](https://img.shields.io/badge/PHPCS-WP_Extra-brightgreen.svg?style=flat " ") 
+![](https://github.com/Pink-Crab/WP_PSR16_Cache/workflows/GitHub_CI/badge.svg " ")
+[![codecov](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache/branch/master/graph/badge.svg?token=DZOCZVPKBN)](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache)
+
+
+
+
+***********************************************
 
 ## Requirements
 
@@ -16,11 +19,14 @@ Requires Composer and WordPress.
 
 Works with PHP versions 7.1, 7.2, 7.3 & 7.4
 
+***********************************************
 ## Installation
 
 ``` bash
 $ composer require pinkcrab/wp-psr16-cache
 ```
+
+
 
 ## Getting Started
 
@@ -67,6 +73,8 @@ $cache->clear();
 
 ```
 
+
+
 ## File_Cache
 
 > Will create the defined base directory when the object is created. 
@@ -81,6 +89,8 @@ $cache = new File_Cache($wp_uploads['basedir'] . '/my-cache', '.cache');
 $cache->set('my_key', ['some', 'data']);
 
 // Creates  /public/wp-content/uploads/my-cache/my_key.cache
+
+
 ```
 
 If you plan on using this as a plugin and want to clean up after an install. You can just create an instance of the Class on activation and then run clear on uninstall
@@ -101,6 +111,8 @@ function called_on_uninstall(){
 }
 ```
 
+
+
 ## Transient Cache
 
 > Makes use of prefixed/grouped transient values. Preventing collisions while still allowing short and clean keys.
@@ -115,13 +127,27 @@ $cache->set('my_key', ['some', 'data']);
 // Will create a transient which can be recalled using either;
 $value = get_transient('my_cache_my_key');
 (new Transient_Cache('my_cache'))->get('my_key');
+
+
+// You can create an instance with no key
+$cache = New Transient_Cache();
+$cache->set('my_other_key', ['some', 'data']);
+// Get
+$value = get_transient('my_other_key');
 ```
 > PLEASE NOTE:
 Calling clear() will use $wpdb to get all transients from the database and clear any which start with your prefix. If you have no prefix defined, this could clear all of your transients and create some unusual side effected. 
 
 > ALSO: 
-Some mangaged hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your key.
+Some mangaged hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your prefix.
+
+
+
+***********************************************
+
+
 
 ## Changelog
 * 2.0.0 - Moved to composer and switched to using WP_FileSystem over raw PHP functions.
 * 2.0.1 - Fixed trailin comma issue in File_Cache and setup all github CI workflows.
+* 2.0.2 - Readme formatting, added in additional tests for 100% coverage.

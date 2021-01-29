@@ -10,6 +10,7 @@ declare(strict_types=1);
  */
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
+use PinkCrab\PHPUnit_Helpers\Reflection;
 use PinkCrab\WP_PSR16_Cache\Transient_Cache;
 use PinkCrab\WP_PSR16_Cache\Tests\Test_Case_Trait;
 
@@ -43,4 +44,40 @@ class Transient_Cache_Tests extends TestCase {
 		 $this->cache->set( 'as_zero', 'Zulu', 0 );
 		$this->assertEquals( 0, (int) get_option( '_transient_timeout_tests_as_zero', 0 ) );
 	}
+
+	/**
+	 * Test CacheInterface_Trait::all_true()
+	 *
+	 * @param Type $var
+	 * @return void
+	 */
+	public function test_all_true_returns_false_if_not_bool(): void {
+		$none_bool = array( 'string' );
+		$this->assertFalse(
+			Reflection::invoke_private_method(
+				$this->cache,
+				'all_true',
+				array( $none_bool )
+			)
+		);
+	}
+
+	/**
+	 * Test CacheInterface_Trait::all_true()
+	 *
+	 * @param Type $var
+	 * @return void
+	 */
+	public function test_all_true_returns_false_if_some_not_false(): void {
+		$some_false = array( true, false );
+		$this->assertFalse(
+			Reflection::invoke_private_method(
+				$this->cache,
+				'all_true',
+				array( $some_false )
+			)
+		);
+	}
+
+
 }
