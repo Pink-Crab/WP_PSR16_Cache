@@ -2,3 +2,5 @@ vendor
 wordpress
 composer.lock
 tests/File_Cache_FS
+coverage-report 
+coverage.xml

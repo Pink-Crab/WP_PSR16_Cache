@@ -10,7 +10,9 @@ declare(strict_types=1);
  */
 use PHPUnit\Framework\TestCase;
 use Psr\SimpleCache\CacheInterface;
+use PinkCrab\WP_PSR16_Cache\Cache_Item;
 use PinkCrab\WP_PSR16_Cache\File_Cache;
+use PinkCrab\PHPUnit_Helpers\Reflection;
 use PinkCrab\WP_PSR16_Cache\Tests\Test_Case_Trait;
 
 class Test_File_Cache extends TestCase {
@@ -29,5 +31,36 @@ class Test_File_Cache extends TestCase {
 	}
 
 	/**             RUNS ALL TESTS FROM TRAIT!             */
+
+	public function test_validate_check_all_item_properties(): void {
+
+		// Mock item
+		$item = new Cache_Item( 'key', array( 'test' => 'foo' ), time() );
+
+		// Check returns false if keys do not match.
+		$this->assertFalse(
+			Reflection::invoke_private_method(
+				$this->cache,
+				'validate_contents',
+				array(
+					'not_the_correct_key',
+					$item,
+				)
+			)
+		);
+
+		// Function test returns false if expiry is no numerical.
+		$item->expiry = 'IM NOT A NUMBER!';
+		$this->assertFalse(
+			Reflection::invoke_private_method(
+				$this->cache,
+				'validate_contents',
+				array(
+					'key',
+					$item,
+				)
+			)
+		);
+	}
 
 }
