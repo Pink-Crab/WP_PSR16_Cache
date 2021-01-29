@@ -177,4 +177,40 @@ trait Test_Case_Trait {
 		$this->expectException( InvalidArgumentException::class );
 		$this->cache->get( array( 'invalid', 'key' ), 'array' );
 	}
+
+	/**
+	 * Test that get returns false if none valid parameter passed.
+	 *
+	 * @return void
+	 */
+	public function testGetReturnsDefaultIfInvalidKeyValues(): void {
+		$this->assertEquals( 'INVALID', $this->cache->get( '1', 'INVALID' ) );
+	}
+
+	/**
+	 * Test that set returns false if none valid parameter passed.
+	 *
+	 * @return void
+	 */
+	public function testSetRetrunsFalseIfInvalidKeyValues(): void {
+		$this->assertFalse( $this->cache->set( '1', 'INVALID' ) );
+	}
+
+	/**
+	 * Test that delete returns false if none valid parameter passed.
+	 *
+	 * @return void
+	 */
+	public function testDeleteRetrunsFalseIfInvalidKeyValues(): void {
+		$this->assertFalse( $this->cache->delete( '1' ) );
+	}
+
+	/**
+	 * Test that set returns false if none valid parameter passed.
+	 *
+	 * @return void
+	 */
+	public function testHasRetrunsFalseIfInvalidKeyValues(): void {
+		$this->assertFalse( $this->cache->has( '1' ) );
+	}
 }
