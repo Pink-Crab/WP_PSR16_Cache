@@ -82,6 +82,7 @@ class File_Cache implements CacheInterface {
 	 * @return void
 	 */
 	protected function set_wp_file_system(): void {
+		require_once ABSPATH . 'wp-admin/includes/file.php';
 		WP_Filesystem();
 		global $wp_filesystem;
 		$this->wp_filesystem = $wp_filesystem;
