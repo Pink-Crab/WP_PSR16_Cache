@@ -22,10 +22,6 @@
             "PinkCrab\\WP_PSR16_Cache\\Tests\\": "tests/"
         }
     },
-    "repositories": [{
-        "url": "https://github.com/Pink-Crab/PHP_Unit_Helpers.git",
-        "type": "git"
-    }],
     "require-dev": {
         "phpunit/phpunit": "^7.0",
         "roots/wordpress": "^5.5",
