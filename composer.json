@@ -36,7 +36,7 @@
         "php-stubs/wordpress-stubs": "^5.6.0",
         "dealerdirect/phpcodesniffer-composer-installer": "*",
         "wp-coding-standards/wpcs": "*",
-        "pinkcrab/phpunit-helpers": "dev-master",
+        "gin0115/wpunit-helpers": "^1.0",
         "object-calisthenics/phpcs-calisthenics-rules": "*"
     },
     "require": {

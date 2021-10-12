@@ -8,11 +8,12 @@ declare(strict_types=1);
  * @since 1.0.0
  * @author GLynn Quelch <glynn.quelch@gmail.com>
  */
+
 use PHPUnit\Framework\TestCase;
+use Gin0115\WPUnit_Helpers\Objects;
 use Psr\SimpleCache\CacheInterface;
 use PinkCrab\WP_PSR16_Cache\Cache_Item;
 use PinkCrab\WP_PSR16_Cache\File_Cache;
-use PinkCrab\PHPUnit_Helpers\Reflection;
 use PinkCrab\WP_PSR16_Cache\Tests\Test_Case_Trait;
 
 class Test_File_Cache extends TestCase {
@@ -39,7 +40,7 @@ class Test_File_Cache extends TestCase {
 
 		// Check returns false if keys do not match.
 		$this->assertFalse(
-			Reflection::invoke_private_method(
+			Objects::invoke_method(
 				$this->cache,
 				'validate_contents',
 				array(
@@ -52,7 +53,7 @@ class Test_File_Cache extends TestCase {
 		// Function test returns false if expiry is no numerical.
 		$item->expiry = 'IM NOT A NUMBER!';
 		$this->assertFalse(
-			Reflection::invoke_private_method(
+			Objects::invoke_method(
 				$this->cache,
 				'validate_contents',
 				array(
