@@ -2,14 +2,11 @@
 
 Provides both WP Transient and WP FileSystem (Direct) implementation to [*PSR16`s CacheInterface*](https://github.com/php-fig/simple-cache).
 
-![alt text](https://img.shields.io/badge/Current_Version-2.0.2-yellow.svg?style=flat " ") 
+![alt text](https://img.shields.io/badge/Current_Version-2.0.3-yellow.svg?style=flat " ") 
 [![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
 
 ![](https://github.com/Pink-Crab/WP_PSR16_Cache/workflows/GitHub_CI/badge.svg " ")
 [![codecov](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache/branch/master/graph/badge.svg?token=DZOCZVPKBN)](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache)
-
-
-
 
 ***********************************************
 
@@ -30,7 +27,7 @@ $ composer require pinkcrab/wp-psr16-cache
 
 ## Getting Started
 
-Once you have the package installed and your autloader has been included. 
+Once you have the package installed and your autoloader has been included. 
 
 ### File Cache
 
@@ -39,11 +36,11 @@ use PinkCrab\WP_PSR16_Cache\File_Cache;
 use PinkCrab\WP_PSR16_Cache\Transient_Cache;
 
 // FILE CACHE
-// Creates directory at path passed, if it doesnt exist.
+// Creates directory at path passed, if it doesn't exist.
 $cache = new File_Cache('path/to/dir');
 
 // TRANSIENT CACHE 
-// Created with optonal groups, adding a prefix to transient keys and set file extension.
+// Created with optional groups, adding a prefix to transient keys and set file extension.
 $cache = new Transient_Cache('group_prefix', '.do' ); 
 
 // Set single item to cache.
@@ -59,7 +56,7 @@ $cache->has( 'cache_key' );
 $cahe->delete( 'cache_key' );
 
 
-// Set mutiple values, with a single expiry
+// Set multiple values, with a single expiry
 $cache->setMultiple( ['key1' => 'Value1', 'key2' => 42], 1 * HOURS_IN_SECONDS );
 
 // Get multiple values in a key => value array, with a shared default.
@@ -104,7 +101,7 @@ function called_on_activation(){
 }
 /**
  * Clears all values form the cache directory.
- * Please note doesnt delete the folder.
+ * Please note doesn't delete the folder.
  */
 function called_on_uninstall(){
     (new File_Cache($wp_uploads['basedir'] . '/my-cache', '.cache'))->clear();
@@ -139,7 +136,7 @@ $value = get_transient('my_other_key');
 Calling clear() will use $wpdb to get all transients from the database and clear any which start with your prefix. If you have no prefix defined, this could clear all of your transients and create some unusual side effected. 
 
 > ALSO: 
-Some mangaged hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your prefix.
+Some managed hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your prefix.
 
 
 
@@ -148,6 +145,7 @@ Some mangaged hosts store transients outside of the regular Options table. This 
 
 
 ## Changelog
-* 2.0.0 - Moved to composer and switched to using WP_FileSystem over raw PHP functions.
-* 2.0.1 - Fixed trailin comma issue in File_Cache and setup all github CI workflows.
+* 2.0.3 - Fixed missing wp filesystem include
 * 2.0.2 - Readme formatting, added in additional tests for 100% coverage.
+* 2.0.1 - Fixed trailin comma issue in File_Cache and setup all github CI workflows.
+* 2.0.0 - Moved to composer and switched to using WP_FileSystem over raw PHP functions.
