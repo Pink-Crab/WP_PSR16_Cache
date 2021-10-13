@@ -9,8 +9,8 @@ declare(strict_types=1);
  * @author GLynn Quelch <glynn.quelch@gmail.com>
  */
 use PHPUnit\Framework\TestCase;
+use Gin0115\WPUnit_Helpers\Objects;
 use Psr\SimpleCache\CacheInterface;
-use PinkCrab\PHPUnit_Helpers\Reflection;
 use PinkCrab\WP_PSR16_Cache\Transient_Cache;
 use PinkCrab\WP_PSR16_Cache\Tests\Test_Case_Trait;
 
@@ -48,13 +48,12 @@ class Transient_Cache_Tests extends TestCase {
 	/**
 	 * Test CacheInterface_Trait::all_true()
 	 *
-	 * @param Type $var
 	 * @return void
 	 */
 	public function test_all_true_returns_false_if_not_bool(): void {
 		$none_bool = array( 'string' );
 		$this->assertFalse(
-			Reflection::invoke_private_method(
+			Objects::invoke_method(
 				$this->cache,
 				'all_true',
 				array( $none_bool )
@@ -65,19 +64,17 @@ class Transient_Cache_Tests extends TestCase {
 	/**
 	 * Test CacheInterface_Trait::all_true()
 	 *
-	 * @param Type $var
 	 * @return void
 	 */
 	public function test_all_true_returns_false_if_some_not_false(): void {
 		$some_false = array( true, false );
 		$this->assertFalse(
-			Reflection::invoke_private_method(
+			Objects::invoke_method(
 				$this->cache,
 				'all_true',
 				array( $some_false )
 			)
 		);
 	}
-
 
 }

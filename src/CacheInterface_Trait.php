@@ -33,12 +33,11 @@ trait CacheInterface_Trait {
 	 * @return bool
 	 * @throws InvalidArgumentException
 	 */
-	protected function is_valid_key_value( $key ): bool {
-		if ( ! is_string( $key ) || empty( $key ) ) {
-			throw new InvalidArgumentException( 'Key must be a valid string' );
+	protected function is_valid_key_value( $key ) : bool {
+		if ( ! \is_string( $key ) || empty( $key ) ) {
+			throw new \InvalidArgumentException( 'Key must be a valid string' );
 		}
-
-		return (bool) preg_match( '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/', $key );
+		return ! (bool) \preg_match( '|[\{\}\(\)/\\\@\:]|', $key );
 	}
 
 	/**
