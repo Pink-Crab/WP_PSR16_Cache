@@ -48,7 +48,6 @@ class Transient_Cache_Tests extends TestCase {
 	/**
 	 * Test CacheInterface_Trait::all_true()
 	 *
-	 * @param Type $var
 	 * @return void
 	 */
 	public function test_all_true_returns_false_if_not_bool(): void {
@@ -65,7 +64,6 @@ class Transient_Cache_Tests extends TestCase {
 	/**
 	 * Test CacheInterface_Trait::all_true()
 	 *
-	 * @param Type $var
 	 * @return void
 	 */
 	public function test_all_true_returns_false_if_some_not_false(): void {
@@ -78,6 +76,5 @@ class Transient_Cache_Tests extends TestCase {
 			)
 		);
 	}
-
 
 }

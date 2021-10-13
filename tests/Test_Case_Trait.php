@@ -8,6 +8,7 @@ namespace PinkCrab\WP_PSR16_Cache\Tests;
 
 use DateInterval;
 use InvalidArgumentException;
+use PinkCrab\WP_PSR16_Cache\CacheInterface_Trait;
 
 trait Test_Case_Trait {
 	/**
@@ -85,7 +86,7 @@ trait Test_Case_Trait {
 		$this->assertEquals( 'A one', $this->cache->get( 'a1' ) );
 		$this->assertEquals( 'B two', $this->cache->get( 'b2' ) );
 
-        $this->cache->clear();
+		$this->cache->clear();
 	}
 
 	/**
@@ -108,7 +109,7 @@ trait Test_Case_Trait {
 		$this->assertEquals( 'E five', $values['e5'] );
 		$this->assertNull( $values['f6'] );
 
-        $this->cache->clear();
+		$this->cache->clear();
 	}
 
 	/**
@@ -129,7 +130,7 @@ trait Test_Case_Trait {
 		$this->assertEquals( 'H eight', $values['h8'] );
 		$this->assertEquals( 'FALLBACK', $values['i9'] );
 
-        $this->cache->clear();
+		$this->cache->clear();
 	}
 
 	/**
@@ -146,7 +147,7 @@ trait Test_Case_Trait {
 		$this->assertNull( $this->cache->get( 'i9' ) );
 		$this->assertNull( $this->cache->get( 'j10' ) );
 
-        $this->cache->clear();
+		$this->cache->clear();
 	}
 
 	/**
@@ -159,11 +160,11 @@ trait Test_Case_Trait {
 		sleep( 3 );
 		$this->assertEquals( 'Fallback', $this->cache->get( 'b', 'Fallback' ) );
 
-        $this->cache->clear();
+		$this->cache->clear();
 	}
 
 	/**
-     * @return void
+	 * @return void
 	 */
 	public function testThrowsInvalidArgumentExceptionIfBlankKey(): void {
 		$this->expectException( InvalidArgumentException::class );
@@ -171,7 +172,7 @@ trait Test_Case_Trait {
 	}
 
 	 /**
-     * @return void
+	 * @return void
 	 */
 	public function testThrowsInvalidArgumentExceptionIfArray(): void {
 		$this->expectException( InvalidArgumentException::class );
@@ -184,7 +185,7 @@ trait Test_Case_Trait {
 	 * @return void
 	 */
 	public function testGetReturnsDefaultIfInvalidKeyValues(): void {
-		$this->assertEquals( 'INVALID', $this->cache->get( '1', 'INVALID' ) );
+		$this->assertEquals( 'INVALID', $this->cache->get( '@1', 'INVALID' ) );
 	}
 
 	/**
@@ -193,7 +194,7 @@ trait Test_Case_Trait {
 	 * @return void
 	 */
 	public function testSetRetrunsFalseIfInvalidKeyValues(): void {
-		$this->assertFalse( $this->cache->set( '1', 'INVALID' ) );
+		$this->assertFalse( $this->cache->set( '@1', 'INVALID' ) );
 	}
 
 	/**
@@ -202,7 +203,7 @@ trait Test_Case_Trait {
 	 * @return void
 	 */
 	public function testDeleteRetrunsFalseIfInvalidKeyValues(): void {
-		$this->assertFalse( $this->cache->delete( '1' ) );
+		$this->assertFalse( $this->cache->delete( '@1' ) );
 	}
 
 	/**
@@ -212,5 +213,42 @@ trait Test_Case_Trait {
 	 */
 	public function testHasRetrunsFalseIfInvalidKeyValues(): void {
 		$this->assertFalse( $this->cache->has( '1' ) );
+	}
+
+	/**
+	 * Test that only valid keys (alpha numeric strings are allowed.)
+	 *
+	 * @return void
+	 */
+	public function test_valid_key(): void {
+		$cache = new class() {
+			use CacheInterface_Trait;
+			public function valid_key( $key ): bool {
+				return $this->is_valid_key_value( $key );
+			}
+		};
+
+		$valid = array(
+			'3e3dc99bedcd3c30416fed1e803cfc8c',
+			'bcc17601257888da30fbad56eb25dc60',
+			md5( strval( time() ) ),
+			md5( '124564' ),
+			md5( strval( 12 + 6767 ) ),
+		);
+
+		foreach ( $valid as $key ) {
+			$this->assertTrue( $cache->valid_key( $key ) );
+		}
+
+		$invalid = array(
+			'@at',
+			'{open',
+			'}close',
+			'/me\\',
+		);
+
+		foreach ( $invalid as $key ) {
+			$this->assertFalse( $cache->valid_key( $key ), "INVALID {$key}" );
+		}
 	}
 }
