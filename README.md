@@ -37,11 +37,11 @@ use PinkCrab\WP_PSR16_Cache\Transient_Cache;
 
 // FILE CACHE
 // Creates directory at path passed, if it doesn't exist.
-$cache = new File_Cache('path/to/dir');
+$cache = new File_Cache('path/to/dir', '.do');
 
 // TRANSIENT CACHE 
 // Created with optional groups, adding a prefix to transient keys and set file extension.
-$cache = new Transient_Cache('group_prefix', '.do' ); 
+$cache = new Transient_Cache('group_prefix' ); 
 
 // Set single item to cache.
 $cache->set( 'cache_key', $data, 24 * HOURS_IN_SECONDS );
