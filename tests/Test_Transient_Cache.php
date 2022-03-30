@@ -25,7 +25,7 @@ class Transient_Cache_Tests extends TestCase {
 	 */
 	protected $cache;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->cache = new Transient_Cache( 'tests' );
 	}
 
