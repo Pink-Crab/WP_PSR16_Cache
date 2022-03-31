@@ -21,13 +21,13 @@ class Test_File_Cache extends TestCase {
 	use Test_Case_Trait;
 
 	/**
-	 * The Tranient Cache Implementation
+	 * The Transient Cache Implementation
 	 *
 	 * @var CacheInterface
 	 */
 	protected $cache;
 
-	public function setUp() {
+	public function setUp(): void {
 		$this->cache = new File_Cache( __DIR__ . '/File_Cache_FS' );
 	}
 
