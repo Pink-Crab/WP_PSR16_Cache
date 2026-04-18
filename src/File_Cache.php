@@ -65,8 +65,8 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Creates an instance of the FileCache, populated with WP_Filesystem_Direct
 	 *
-	 * @param string $filepath
-	 * @param string $extension
+	 * @param string $filepath  Directory path where cache files are written (trailing slashes are stripped).
+	 * @param string $extension File extension used for each cache file, including the leading dot.
 	 */
 	public function __construct( string $filepath, string $extension = '.do' ) {
 		$this->filepath  = rtrim( $filepath, '\\/' );
@@ -79,7 +79,7 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Creates an instance of the Direct WP Filesytem.
 	 *
-	 * @return void
+	 * @return void Assigns the global $wp_filesystem onto this instance; nothing returned.
 	 */
 	protected function set_wp_file_system(): void {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -91,7 +91,7 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Creates cache directory if it doesnt exist.
 	 *
-	 * @return void
+	 * @return void Creates the configured cache directory when absent; nothing returned.
 	 */
 	protected function maybe_create_cache_dir(): void {
 		if ( ! $this->wp_filesystem->exists( $this->filepath ) ) {
@@ -102,9 +102,9 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Checks if key is set.
 	 *
-	 * @param string $key
-	 * @return bool
-	 * @throws InvalidArgumentException
+	 * @param string $key Cache key to probe.
+	 * @return bool       True when a valid, unexpired cache file exists for the key.
+	 * @throws InvalidArgumentException When the key is not a non-empty string.
 	 */
 	public function has( $key ) {
 		if ( ! $this->is_valid_key_value( $key ) ) {
@@ -119,9 +119,9 @@ class File_Cache implements CacheInterface {
 	 *
 	 * @param string                 $key   The key of the item to store.
 	 * @param mixed                  $value The value of the item to store, must be serializable.
-	 * @param null|int|\DateInterval $ttl
-	 * @return bool
-	 * @throws InvalidArgumentException
+	 * @param null|int|\DateInterval $ttl   Lifetime for the entry; null or 0 persists with no expiry.
+	 * @return bool                         True if the cache file was written, false on invalid key or write failure.
+	 * @throws InvalidArgumentException     When the key is not a non-empty string.
 	 */
 	public function set( $key, $value, $ttl = null ) {
 		if ( ! $this->is_valid_key_value( $key ) ) {
@@ -135,27 +135,28 @@ class File_Cache implements CacheInterface {
 	}
 
 	/**
-	 * Attempts to get from cache, return defualt if nothing returned.
+	 * Attempts to get from cache, returning default if nothing found or the
+	 * cached entry has expired.
 	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return mixed
-	 * @throws InvalidArgumentException
+	 * @param string $key           Cache key to look up.
+	 * @param mixed  $default_value Fallback to return when the key is missing or expired.
+	 * @return mixed                The cached value, or $default_value.
+	 * @throws InvalidArgumentException On invalid key.
 	 */
-	public function get( $key, $default = null ) {
+	public function get( $key, $default_value = null ) {
 		if ( ! $this->is_valid_key_value( $key ) ) {
-			return $default;
+			return $default_value;
 		}
 		$contents = $this->get_contents( $key );
-		return $contents ? $contents->data : $default;
+		return $contents ? $contents->data : $default_value;
 	}
 
 	/**
 	 * Clears a defined cached instance.
 	 *
-	 * @param string $key
-	 * @return bool
-	 * @throws InvalidArgumentException
+	 * @param string $key Cache key of the file to remove.
+	 * @return bool       True if the cache file was deleted, false on invalid key or filesystem failure.
+	 * @throws InvalidArgumentException When the key is not a non-empty string.
 	 */
 	public function delete( $key ) {
 		if ( ! $this->is_valid_key_value( $key ) ) {
@@ -169,24 +170,24 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Clears all cache items from the directory.
 	 *
-	 * @return bool
+	 * @return bool True if the cache directory (and all files within) was removed successfully.
 	 */
 	public function clear() {
 		return $this->wp_filesystem->delete( $this->filepath, true );
 	}
 
 	/**
-	 * Gets multiple values, will return default in lue of value
+	 * Gets multiple values, returning the default in lieu of a cached value.
 	 *
-	 * @param array<string, mixed> $keys
-	 * @param string|float|int|array<mixed>|object|resource|bool $default
-	 * @return array<string, mixed>
+	 * @param array<int, string> $keys          Cache keys to fetch.
+	 * @param mixed              $default_value Fallback returned for any key that is not in cache.
+	 * @return array<string, mixed>             Map of key => cached value (or default where missing).
 	 */
-	public function getMultiple( $keys, $default = null ) {
+	public function getMultiple( $keys, $default_value = null ) {
 		return array_reduce(
 			$keys,
-			function( $carry, $key ) use ( $default ) {
-				$carry[ $key ] = $this->get( $key, $default );
+			function ( $carry, $key ) use ( $default_value ) {
+				$carry[ $key ] = $this->get( $key, $default_value );
 				return $carry;
 			},
 			array()
@@ -196,15 +197,15 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Sets multiple values in a key=>value array.
 	 *
-	 * @param array<string, mixed> $values
-	 * @param int|null $ttl
-	 * @return bool
+	 * @param array<string, mixed> $values Map of key => value to write in one batch.
+	 * @param int|null             $ttl    Shared lifetime applied to every entry; null or 0 persists with no expiry.
+	 * @return bool                        True only if every individual set() call succeeded.
 	 */
 	public function setMultiple( $values, $ttl = null ) {
 		return $this->all_true(
 			array_reduce(
 				array_keys( $values ),
-				function( $carry, $key ) use ( $values, $ttl ) {
+				function ( $carry, $key ) use ( $values, $ttl ) {
 					$carry[ $key ] = $this->set( $key, $values[ $key ], $ttl );
 					return $carry;
 				},
@@ -216,13 +217,13 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Deletes multiple keys
 	 *
-	 * @param array<int, string> $keys
-	 * @return bool
+	 * @param array<int, string> $keys List of cache keys to remove.
+	 * @return bool                    True only if every individual delete() call succeeded.
 	 */
 	public function deleteMultiple( $keys ) {
 		return $this->all_true(
 			array_map(
-				function( $key ) {
+				function ( $key ) {
 					return $this->delete( $key );
 				},
 				$keys
@@ -234,8 +235,8 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Parses the file name based on the settings and key
 	 *
-	 * @param string $filename;
-	 * @return string
+	 * @param string $filename Cache key used as the bare file name (without directory or extension).
+	 * @return string          Normalised absolute path of the cache file on disk.
 	 */
 	protected function compile_file_path( string $filename ): string {
 		return \wp_normalize_path(
@@ -251,10 +252,10 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Compiles the cache item object
 	 *
-	 * @param string $key
-	 * @param mixed $data
-	 * @param null|int|\DateInterval $ttl
-	 * @return Cache_Item
+	 * @param string                 $key  Cache key stored inside the item (used later to validate reads).
+	 * @param mixed                  $data Value to be wrapped for serialization.
+	 * @param null|int|\DateInterval $ttl  Lifetime; converted to seconds then added to the current timestamp.
+	 * @return Cache_Item                  Fully populated Cache_Item ready to be serialized to disk.
 	 */
 	protected function compile_cache_item( string $key, $data, $ttl ): Cache_Item {
 		return new Cache_Item(
@@ -267,8 +268,8 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Composes the expiry time with time added to current timestamp.
 	 *
-	 * @param int $expiry
-	 * @return int
+	 * @param int $expiry TTL in seconds (0 means the entry never expires).
+	 * @return int        Absolute unix timestamp at which the item expires, or 0 for no expiry.
 	 */
 	protected function compile_expiry( int $expiry ): int {
 		return $expiry !== 0 ? $expiry + time() : 0;
@@ -279,9 +280,9 @@ class File_Cache implements CacheInterface {
 	 * Validates the contents of a file read.
 	 * Checks key matches, has data and hasnt expired.
 	 *
-	 * @param string $key
-	 * @param Cache_Item $data
-	 * @return bool
+	 * @param string     $key  Cache key the caller expects this item to belong to.
+	 * @param Cache_Item $data Unserialized cache item read from disk.
+	 * @return bool            True when the keys match, expiry is numeric and the entry has not expired.
 	 */
 	protected function validate_contents( string $key, Cache_Item $data ): bool {
 		switch ( true ) {
@@ -309,12 +310,13 @@ class File_Cache implements CacheInterface {
 	/**
 	 * Attempts to get the contents from a key.
 	 *
-	 * @param string $key
+	 * @param string $key      Cache key whose file should be read from disk.
 	 * @return Cache_Item|null If we have valid data (not expired), the data else null
 	 */
 	protected function get_contents( string $key ): ?Cache_Item {
 
-		$file_contents = $this->wp_filesystem->get_contents( $this->compile_file_path( $key ) ) ?: '';
+		$contents_raw  = $this->wp_filesystem->get_contents( $this->compile_file_path( $key ) );
+		$file_contents = $contents_raw ? $contents_raw : '';
 
 		$file_contents = \maybe_unserialize( $file_contents );
 
@@ -322,5 +324,4 @@ class File_Cache implements CacheInterface {
 			? $file_contents
 			: null;
 	}
-
 }

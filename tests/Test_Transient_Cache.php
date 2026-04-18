@@ -8,13 +8,12 @@ declare(strict_types=1);
  * @since 1.0.0
  * @author GLynn Quelch <glynn.quelch@gmail.com>
  */
-use PHPUnit\Framework\TestCase;
 use Gin0115\WPUnit_Helpers\Objects;
 use Psr\SimpleCache\CacheInterface;
 use PinkCrab\WP_PSR16_Cache\Transient_Cache;
 use PinkCrab\WP_PSR16_Cache\Tests\Test_Case_Trait;
 
-class Transient_Cache_Tests extends TestCase {
+class Transient_Cache_Tests extends WP_UnitTestCase {
 
 	use Test_Case_Trait;
 

@@ -29,11 +29,11 @@ trait CacheInterface_Trait {
 	/**
 	 * Checks if the passed key is a valid key value.
 	 *
-	 * @param mixed $key
-	 * @return bool
-	 * @throws InvalidArgumentException
+	 * @param mixed $key The key candidate to validate against PSR-16 rules.
+	 * @return bool      True when the key is a non-empty string free of reserved characters.
+	 * @throws InvalidArgumentException When the key is not a non-empty string.
 	 */
-	protected function is_valid_key_value( $key ) : bool {
+	protected function is_valid_key_value( $key ): bool {
 		if ( ! \is_string( $key ) || empty( $key ) ) {
 			throw new \InvalidArgumentException( 'Key must be a valid string' );
 		}
@@ -43,10 +43,10 @@ trait CacheInterface_Trait {
 	/**
 	 * Converts a ttl ( DateInterval, int )
 	 *
-	 * @param mixed $ttl
-	 * @return int
+	 * @param mixed $ttl DateInterval, numeric seconds, or anything else (unknown types become 0).
+	 * @return int       TTL expressed as whole seconds; 0 signals no expiry.
 	 */
-	public function ttl_to_seconds( $ttl ):int {
+	public function ttl_to_seconds( $ttl ): int {
 		switch ( true ) {
 			case is_a( $ttl, DateInterval::class ):
 				$days  = (int) $ttl->format( '%a' );
@@ -68,13 +68,13 @@ trait CacheInterface_Trait {
 	}
 
 	/**
-	 * Checks if all values in an array are true and boosl
+	 * Checks if all values in an array are true booleans.
 	 *
-	 * @param array<mixed> $array
-	 * @return bool
+	 * @param array<mixed> $values Collection of values to test.
+	 * @return bool                True only if every entry is === true.
 	 */
-	protected function all_true( array $array ): bool {
-		foreach ( $array as $value ) {
+	protected function all_true( array $values ): bool {
+		foreach ( $values as $value ) {
 			if ( ! is_bool( $value ) ) {
 				return false;
 			}

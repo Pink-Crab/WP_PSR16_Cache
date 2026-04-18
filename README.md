@@ -1,11 +1,15 @@
 # WP PSR16 Simple Cache
 
-Provides both WP Transient and WP FileSystem (Direct) implementation to [*PSR16`s CacheInterface*](https://github.com/php-fig/simple-cache).
+A WordPress-backed PSR-16 `CacheInterface` implementation with two interchangeable drivers: WP transients and the WP `Direct` filesystem. See [PSR-16 SimpleCache](https://github.com/php-fig/simple-cache) for the contract these drivers implement.
 
-![alt text](https://img.shields.io/badge/Current_Version-2.0.4-yellow.svg?style=flat " ") 
-[![Open Source Love](https://badges.frapsoft.com/os/mit/mit.svg?v=102)]()
-![](https://github.com/Pink-Crab/WP_PSR16_Cache/workflows/GitHub_CI/badge.svg " ")
-[![codecov](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache/branch/master/graph/badge.svg?token=DZOCZVPKBN)](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache)
+[![Latest Stable Version](https://poser.pugx.org/pinkcrab/wp-psr16-cache/v)](https://packagist.org/packages/pinkcrab/wp-psr16-cache) [![Total Downloads](https://poser.pugx.org/pinkcrab/wp-psr16-cache/downloads)](https://packagist.org/packages/pinkcrab/wp-psr16-cache) [![Latest Unstable Version](https://poser.pugx.org/pinkcrab/wp-psr16-cache/v/unstable)](https://packagist.org/packages/pinkcrab/wp-psr16-cache) [![License](https://poser.pugx.org/pinkcrab/wp-psr16-cache/license)](https://packagist.org/packages/pinkcrab/wp-psr16-cache) [![PHP Version Require](https://poser.pugx.org/pinkcrab/wp-psr16-cache/require/php)](https://packagist.org/packages/pinkcrab/wp-psr16-cache)
+![GitHub contributors](https://img.shields.io/github/contributors/Pink-Crab/WP_PSR16_Cache?label=Contributors)
+![GitHub issues](https://img.shields.io/github/issues-raw/Pink-Crab/WP_PSR16_Cache)
+[![WP 6.6 [PHP8.0-8.4] Tests](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_6.yaml/badge.svg)](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_6.yaml)
+[![WP 6.7 [PHP8.0-8.4] Tests](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_7.yaml/badge.svg)](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_7.yaml)
+[![WP 6.8 [PHP8.0-8.4] Tests](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_8.yaml/badge.svg)](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_8.yaml)
+[![WP 6.9 [PHP8.0-8.4] Tests](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_9.yaml/badge.svg)](https://github.com/Pink-Crab/WP_PSR16_Cache/actions/workflows/WP_6_9.yaml)
+[![codecov](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache/graph/badge.svg?token=DZOCZVPKBN)](https://codecov.io/gh/Pink-Crab/WP_PSR16_Cache)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Pink-Crab/WP_PSR16_Cache/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/Pink-Crab/WP_PSR16_Cache/?branch=master)
 
 ***********************************************
@@ -13,8 +17,11 @@ Provides both WP Transient and WP FileSystem (Direct) implementation to [*PSR16`
 ## Requirements
 
 Requires Composer and WordPress.
-* Tested with PHP7.1, 7.2, 7.3, 7.4, 8.0, 8.1
-* Tested with WP5.5, 5.6, 5.7, 5.8, 5.9
+
+> **TESTED AGAINST**
+> * PHP 8.0, 8.1, 8.2, 8.3 & 8.4
+> * WP 6.6, 6.7, 6.8 & 6.9
+> * MySQL 8.4
 
 ## Installation
 
@@ -24,124 +31,112 @@ $ composer require pinkcrab/wp-psr16-cache
 
 ## Getting Started
 
-Once you have the package installed and your autoloader has been included. 
-
-### File Cache
+Once the package is installed and your autoloader has been included, the two drivers can be used interchangeably through PSR-16's `CacheInterface`.
 
 ``` php
 use PinkCrab\WP_PSR16_Cache\File_Cache;
 use PinkCrab\WP_PSR16_Cache\Transient_Cache;
 
 // FILE CACHE
-// Creates directory at path passed, if it doesn't exist.
-$cache = new File_Cache('path/to/dir', '.do');
+// Creates the directory at the path passed, if it doesn't exist.
+$cache = new File_Cache( 'path/to/dir', '.do' );
 
-// TRANSIENT CACHE 
-// Created with optional groups, adding a prefix to transient keys and set file extension.
-$cache = new Transient_Cache('group_prefix' ); 
+// TRANSIENT CACHE
+// Optional group adds a prefix to every transient key.
+$cache = new Transient_Cache( 'group_prefix' );
 
-// Set single item to cache.
+// Set a single item.
 $cache->set( 'cache_key', $data, 24 * HOURS_IN_SECONDS );
 
-// Gets the value, if not set or expired returns null
+// Get the value; returns the fallback if the key is missing or expired.
 $cache->get( 'cache_key', 'fallback' );
 
-// Returns if valid cache item exists.
+// True when a valid (non-expired) cache item exists.
 $cache->has( 'cache_key' );
 
-// Deletes a cache if it exists.
-$cahe->delete( 'cache_key' );
+// Delete a single cache entry.
+$cache->delete( 'cache_key' );
 
+// Batch writes with a shared expiry.
+$cache->setMultiple( array( 'key1' => 'Value1', 'key2' => 42 ), 1 * HOURS_IN_SECONDS );
 
-// Set multiple values, with a single expiry
-$cache->setMultiple( ['key1' => 'Value1', 'key2' => 42], 1 * HOURS_IN_SECONDS );
+// Batch reads with a shared default.
+$cache->getMultiple( array( 'key1', 'key2' ), 'FALLBACK' );
 
-// Get multiple values in a key => value array, with a shared default.
-$cache->getMultiple( ['key1', 'key2'], 'FALLBACK' );
+// Batch delete.
+$cache->deleteMultiple( array( 'key1', 'key2' ) );
 
-// Clears multiple keys.
-$cache->deleteMultiple( ['key1', 'key2'] );
-
-// Clear all cache items
+// Clear every key tracked by this cache instance.
 $cache->clear();
-
 ```
-
-
 
 ## File_Cache
 
-> Will create the defined base directory when the object is created. 
+> Creates the configured base directory when the object is constructed.
 
-The constructor takes 2 properties the path and the file extension. By default the file extension is **.do**.
+The constructor takes two arguments — the path and the file extension. The extension defaults to **.do**.
 
 ```php
 $wp_uploads = wp_upload_dir();
 
-$cache = new File_Cache($wp_uploads['basedir'] . '/my-cache', '.cache');
+$cache = new File_Cache( $wp_uploads['basedir'] . '/my-cache', '.cache' );
 
-$cache->set('my_key', ['some', 'data']);
+$cache->set( 'my_key', array( 'some', 'data' ) );
 
 // Creates  /public/wp-content/uploads/my-cache/my_key.cache
-
-
 ```
 
-If you plan on using this as a plugin and want to clean up after an install. You can just create an instance of the Class on activation and then run clear on uninstall
+A common pattern is to warm the directory on plugin activation and clear it on uninstall:
 
 ```php
-/** 
- * Creates the cache directory
- */
-function called_on_activation(){
-    new File_Cache($wp_uploads['basedir'] . '/my-cache', '.cache');
-}
 /**
- * Clears all values form the cache directory.
- * Please note doesn't delete the folder.
+ * Creates the cache directory.
  */
-function called_on_uninstall(){
-    (new File_Cache($wp_uploads['basedir'] . '/my-cache', '.cache'))->clear();
+function called_on_activation() {
+    new File_Cache( $wp_uploads['basedir'] . '/my-cache', '.cache' );
+}
+
+/**
+ * Removes every cache entry in the directory.
+ * Note: clear() removes the files inside the directory; the directory itself is left in place.
+ */
+function called_on_uninstall() {
+    ( new File_Cache( $wp_uploads['basedir'] . '/my-cache', '.cache' ) )->clear();
 }
 ```
-
-
 
 ## Transient Cache
 
-> Makes use of prefixed/grouped transient values. Preventing collisions while still allowing short and clean keys.
+> Uses prefixed/grouped transient values — prevents collisions while still allowing short, clean keys.
 
-The constructor takes a single argument, this denotes the group that your transients will be created using. This can be omitted if you wanted no prefix on your keys.
+The constructor takes a single optional argument: the group name that every transient written through this instance will be prefixed with. Omit it for no prefix.
 
 ```php
-$cache = new Transient_Cache('my_cache');
+$cache = new Transient_Cache( 'my_cache' );
 
-$cache->set('my_key', ['some', 'data']);
+$cache->set( 'my_key', array( 'some', 'data' ) );
 
-// Will create a transient which can be recalled using either;
-$value = get_transient('my_cache_my_key');
-(new Transient_Cache('my_cache'))->get('my_key');
+// The value can be read back via either:
+$value = get_transient( 'my_cache_my_key' );
+( new Transient_Cache( 'my_cache' ) )->get( 'my_key' );
 
 
-// You can create an instance with no key
-$cache = New Transient_Cache();
-$cache->set('my_other_key', ['some', 'data']);
-// Get
-$value = get_transient('my_other_key');
+// Or create an instance with no group prefix:
+$cache = new Transient_Cache();
+$cache->set( 'my_other_key', array( 'some', 'data' ) );
+$value = get_transient( 'my_other_key' );
 ```
-> PLEASE NOTE:
-Calling clear() will use $wpdb to get all transients from the database and clear any which start with your prefix. If you have no prefix defined, this could clear all of your transients and create some unusual side effected. 
 
-> ALSO: 
-Some managed hosts store transients outside of the regular Options table. This can lead to problems when fetching all transients with your prefix.
+> **PLEASE NOTE**
+> `clear()` queries `$wpdb` for every transient whose key matches the configured prefix and deletes them. If no group prefix is set, this can match — and delete — unrelated transients in the same database. Always set a group on a cache you plan to clear.
 
-
+> **ALSO**
+> Some managed hosts store transients outside the regular `options` table. Where that happens, the prefix-scan in `clear()` won't see them and they will not be cleared.
 
 ***********************************************
 
-
-
 ## Changelog
+* 2.1.0 - Drop PHP 7.x, require PHP 8.0+. Bump dev deps: phpstan 2.x, phpstan-wordpress 2.x, phpunit 9.x, WP 6.6-6.9 test matrix. Replace the `php.yaml` workflow with WP_6_6 / WP_6_7 / WP_6_8 / WP_6_9 actions (`mysql:8.4`). Add `.scrutinizer.yml`. Force `FS_METHOD=direct` in test config so `File_Cache` consistently gets `WP_Filesystem_Direct` under PHP 8.x. Expand `@param` / `@return` docblocks across the source tree. No public API changes.
 * 2.0.4 - Updated dev dependencies and added scrutinizer to CI
 * 2.0.3 - Fixed missing wp filesystem include
 * 2.0.2 - Readme formatting, added in additional tests for 100% coverage.

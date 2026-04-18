@@ -7,6 +7,14 @@
 // Composer autoloader must be loaded before WP_PHPUNIT__DIR will be available
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 
+// Load all environment variables into $_ENV
+try {
+	$dotenv = Dotenv\Dotenv::createUnsafeImmutable( __DIR__ );
+	$dotenv->load();
+} catch ( \Throwable $th ) {
+	// Do nothing if fails to find env as not used in pipeline.
+}
+
 // Give access to tests_add_filter() function.
 require_once getenv( 'WP_PHPUNIT__DIR' ) . '/includes/functions.php';
 

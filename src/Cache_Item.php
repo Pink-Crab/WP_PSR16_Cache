@@ -51,9 +51,9 @@ class Cache_Item {
 	/**
 	 * Creates an instance of a Cache Item
 	 *
-	 * @param string $key
-	 * @param mixed $data
-	 * @param int $expiry
+	 * @param string $key    Cache key this item is stored against.
+	 * @param mixed  $data   The value being cached (stored as-is on the object).
+	 * @param int    $expiry Absolute expiry timestamp, or 0 for never expires.
 	 */
 	public function __construct( string $key, $data, int $expiry ) {
 		$this->key    = $key;

@@ -2,6 +2,9 @@ vendor
 wordpress
 composer.lock
 tests/File_Cache_FS
-coverage-report 
+tests/.env
+coverage-report
 coverage.xml
 .vscode
+.phpunit.result.cache
+clover.xml
