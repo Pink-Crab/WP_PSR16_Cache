@@ -9,14 +9,13 @@ declare(strict_types=1);
  * @author GLynn Quelch <glynn.quelch@gmail.com>
  */
 
-use PHPUnit\Framework\TestCase;
 use Gin0115\WPUnit_Helpers\Objects;
 use Psr\SimpleCache\CacheInterface;
 use PinkCrab\WP_PSR16_Cache\Cache_Item;
 use PinkCrab\WP_PSR16_Cache\File_Cache;
 use PinkCrab\WP_PSR16_Cache\Tests\Test_Case_Trait;
 
-class Test_File_Cache extends TestCase {
+class Test_File_Cache extends WP_UnitTestCase {
 
 	use Test_Case_Trait;
 

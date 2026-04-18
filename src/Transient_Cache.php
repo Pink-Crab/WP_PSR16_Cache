@@ -55,7 +55,7 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Creates an instance of the Transient Cache.
 	 *
-	 * @param string|null $group
+	 * @param string|null $group Optional namespace prefixed onto every transient key (null disables prefixing).
 	 */
 	public function __construct( ?string $group = null ) {
 		$this->group = $group;
@@ -67,9 +67,9 @@ class Transient_Cache implements CacheInterface {
 	 *
 	 * @param string                 $key   The key of the item to store.
 	 * @param mixed                  $value The value of the item to store, must be serializable.
-	 * @param null|int|\DateInterval $ttl
-	 * @return bool
-	 * @throws InvalidArgumentException
+	 * @param null|int|\DateInterval $ttl   Lifetime for the entry; null or 0 persists with no expiry.
+	 * @return bool                         True if the transient was written, false on invalid key or write failure.
+	 * @throws InvalidArgumentException     When the key is not a non-empty string.
 	 */
 	public function set( $key, $value, $ttl = null ) {
 		if ( ! $this->is_valid_key_value( $key ) ) {
@@ -85,24 +85,25 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Attempts to get from cache, return defualt if nothing returned.
 	 *
-	 * @param string $key
-	 * @param mixed $default
-	 * @return mixed
-	 * @throws InvalidArgumentException
+	 * @param string $key           Cache key to look up (prefixed with the group if one is set).
+	 * @param mixed  $default_value Fallback returned when the transient is missing or falsy.
+	 * @return mixed                The stored value, or $default_value on miss/invalid key.
+	 * @throws InvalidArgumentException When the key is not a non-empty string.
 	 */
-	public function get( $key, $default = null ) {
+	public function get( $key, $default_value = null ) {
 		if ( ! $this->is_valid_key_value( $key ) ) {
-			return $default;
+			return $default_value;
 		}
-		return \get_transient( $this->parse_key( $key ) ) ?: $default;
+		$value = \get_transient( $this->parse_key( $key ) );
+		return $value ? $value : $default_value;
 	}
 
 	/**
 	 * Clears a defined cached instance.
 	 *
-	 * @param string $key
-	 * @return bool
-	 * @throws InvalidArgumentException
+	 * @param string $key Cache key of the transient to remove.
+	 * @return bool       True if the transient was deleted, false on invalid key or if it did not exist.
+	 * @throws InvalidArgumentException When the key is not a non-empty string.
 	 */
 	public function delete( $key ) {
 		if ( ! $this->is_valid_key_value( $key ) ) {
@@ -114,11 +115,11 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Clears all transients for the defined group.
 	 *
-	 * @return bool
+	 * @return bool True only if every matching transient was deleted successfully.
 	 */
 	public function clear() {
 		$results = array_map(
-			function( $e ) {
+			function ( $e ) {
 				return \delete_transient( $this->parse_key( $e ) );
 			},
 			$this->get_group_keys()
@@ -129,15 +130,15 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Gets multiple cache values based on an array of keys.
 	 *
-	 * @param array<int, string> $keys
-	 * @param mixed $default
-	 * @return array<string, mixed>
+	 * @param array<int, string> $keys          Cache keys to fetch.
+	 * @param mixed              $default_value Fallback returned for any key that is not in cache.
+	 * @return array<string, mixed>             Map of key => cached value (or default where missing).
 	 */
-	public function getMultiple( $keys, $default = null ) {
+	public function getMultiple( $keys, $default_value = null ) {
 		return array_reduce(
 			$keys,
-			function( $carry, $key ) use ( $default ) {
-				$carry[ $key ] = $this->get( $key, $default );
+			function ( $carry, $key ) use ( $default_value ) {
+				$carry[ $key ] = $this->get( $key, $default_value );
 				return $carry;
 			},
 			array()
@@ -147,15 +148,15 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Sets multiple keys based ona  key => value array.
 	 *
-	 * @param array<string, mixed> $values
-	 * @param DateInterval|int|null $ttl
-	 * @return bool
+	 * @param array<string, mixed>  $values Map of key => value to write in one batch.
+	 * @param DateInterval|int|null $ttl    Shared lifetime applied to every entry; null or 0 persists with no expiry.
+	 * @return bool                         True only if every individual set() call succeeded.
 	 */
 	public function setMultiple( $values, $ttl = null ) {
 		return $this->all_true(
 			array_reduce(
 				array_keys( $values ),
-				function( $carry, $key ) use ( $values, $ttl ) {
+				function ( $carry, $key ) use ( $values, $ttl ) {
 					$carry[ $key ] = $this->set( $key, $values[ $key ], $ttl );
 					return $carry;
 				},
@@ -167,14 +168,14 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Deletes multiple keys based on an arrya of keys.
 	 *
-	 * @param array<int, string> $keys
-	 * @return bool
+	 * @param array<int, string> $keys List of cache keys to remove.
+	 * @return bool                    True only if every individual delete() call succeeded.
 	 */
 	public function deleteMultiple( $keys ) {
 		return $this->all_true(
 			array_reduce(
 				$keys,
-				function( $carry, $key ) {
+				function ( $carry, $key ) {
 					$carry[ $key ] = $this->delete( $key );
 					return $carry;
 				},
@@ -186,8 +187,8 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Checks if a key is defined in transient.
 	 *
-	 * @param string $key
-	 * @return bool
+	 * @param string $key Cache key to probe.
+	 * @return bool       True when get() returns a non-null value for the key.
 	 */
 	public function has( $key ) {
 		return ! is_null( $this->get( $key ) );
@@ -196,8 +197,8 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Sets the key basd on the group
 	 *
-	 * @param string $key
-	 * @return string
+	 * @param string $key Raw user-supplied cache key.
+	 * @return string     Key with the group prefix applied (unchanged when no group is set).
 	 */
 	protected function parse_key( string $key ): string {
 		return \sprintf(
@@ -210,7 +211,7 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Sets the defined prefix to keys.
 	 *
-	 * @return string
+	 * @return string The group name followed by the postfix separator, or an empty string when no group is set.
 	 */
 	protected function group_key_prefix(): string {
 		return $this->group
@@ -221,12 +222,12 @@ class Transient_Cache implements CacheInterface {
 	/**
 	 * Returns all keys that match for this group.
 	 *
-	 * @return array<int, string>
+	 * @return array<int, string> The base cache keys (group prefix and _transient_ wrapper stripped).
 	 */
 	protected function get_group_keys(): array {
 		// Extract the base cache keys (excluding pre/postfixes)
 		return array_map(
-			function( $key ) {
+			function ( $key ) {
 				return \str_replace(
 					'_transient_' . $this->group_key_prefix(),
 					'',
@@ -241,7 +242,7 @@ class Transient_Cache implements CacheInterface {
 	 * Gets all transients with a matching
 	 *
 	 * @uses global $wpdb
-	 * @return array<int, string>
+	 * @return array<int, string> Raw option_name values from the options table matching this group's transient prefix.
 	 */
 	protected function get_transients(): array {
 		global $wpdb;

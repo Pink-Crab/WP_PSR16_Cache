@@ -22,6 +22,12 @@ define( 'WP_DEFAULT_THEME', 'default' );
 // Test with WordPress debug mode (default).
 define( 'WP_DEBUG', true );
 
+// Force WP_Filesystem to use the direct driver in tests so File_Cache
+// gets WP_Filesystem_Direct instead of WP_Filesystem_ftpsockets (which
+// triggers PHP 8+ dynamic-property deprecations and never lets the
+// cache write succeed).
+define( 'FS_METHOD', 'direct' );
+
 // ** MySQL settings ** //
 
 // This configuration file will be used by the copy of WordPress being tested.
